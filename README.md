@@ -1,21 +1,37 @@
-<<<<<<< HEAD
-# life_organizer
+# Life Organizer Monorepo
 
-A new Flutter project.
+Flutter monorepo for Life Organizer, the shared core package, and the WetFace alarm module.
 
-## Getting Started
+## Packages
 
-This project is a starting point for a Flutter application.
+- `packages/life_organizer`: main Flutter app.
+- `packages/core`: shared configuration and base services.
+- `packages/wetface`: WetFace alarm flow. Sprint 1 ships a mock validation flow while native alarm/camera/Gemini integration is prepared.
 
-A few resources to get you started if this is your first Flutter project:
+## Local Setup
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+dart pub get
+dart run melos bootstrap
+dart run melos exec --concurrency 1 -- "dart analyze ."
+dart run melos exec --dir-exists=test --concurrency 1 -- "flutter test"
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# life_organizer
->>>>>>> c80c190f7b5828de15a42e21396e15821dd2fb86
+Run the app:
+
+```bash
+cd packages/life_organizer
+flutter run \
+  --dart-define=SUPABASE_URL=<url> \
+  --dart-define=SUPABASE_ANON_KEY=<anon-key> \
+  --dart-define=N8N_WEBHOOK_URL=<worker-url> \
+  --dart-define=CLOUDFLARE_BASE_URL=<worker-base-url>
+```
+
+## Git Flow
+
+- `main`: stable production branch.
+- `develop`: integration branch.
+- `feature/*`: one branch per sprint task.
+
+Do not push directly to `main` or `develop`; use PRs with passing analysis/build checks.

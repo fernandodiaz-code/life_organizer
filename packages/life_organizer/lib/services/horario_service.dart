@@ -72,7 +72,7 @@ class HorarioService {
 
   static Future<HorarioItem> crear(Map<String, dynamic> data) async {
     final res = await _db.from('horario').insert(data).select().single();
-    return HorarioItem.fromJson(res as Map<String, dynamic>);
+    return HorarioItem.fromJson(res);
   }
 
   static Future<void> actualizar(String id, Map<String, dynamic> data) async {

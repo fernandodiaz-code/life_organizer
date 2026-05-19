@@ -13,16 +13,20 @@ Future<void> main() async {
   // Locale española para intl (fechas en español)
   await initializeDateFormatting('es', null);
 
-  try {
-    await Supabase.initialize(
-      url: AppConstants.supabaseUrl,
-      anonKey: AppConstants.supabaseAnonKey,
-    );
-    print('[Supabase] Inicializado correctamente. URL: ${AppConstants.supabaseUrl}');
-    print('[Supabase] AnonKey (primeros 20 chars): ${AppConstants.supabaseAnonKey.substring(0, 20)}');
-  } catch (e, stack) {
-    print('[Supabase] ERROR al inicializar: $e');
-    print('[Supabase] StackTrace: $stack');
+  if (AppConstants.supabaseUrl.isNotEmpty &&
+      AppConstants.supabaseAnonKey.isNotEmpty) {
+    try {
+      await Supabase.initialize(
+        url: AppConstants.supabaseUrl,
+        anonKey: AppConstants.supabaseAnonKey,
+      );
+      debugPrint('[Supabase] Inicializado correctamente.');
+    } catch (e, stack) {
+      debugPrint('[Supabase] ERROR al inicializar: $e');
+      debugPrint('[Supabase] StackTrace: $stack');
+    }
+  } else {
+    debugPrint('[Supabase] Configuración no definida. Usar --dart-define.');
   }
 
   // Barra de estado transparente
@@ -57,6 +61,11 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
+        if (AppConstants.supabaseUrl.isEmpty ||
+            AppConstants.supabaseAnonKey.isEmpty) {
+          return const LoginScreen();
+        }
+
         // Usa la sesión actual si el stream aún no emitió
         final session = snapshot.hasData
             ? snapshot.data!.session

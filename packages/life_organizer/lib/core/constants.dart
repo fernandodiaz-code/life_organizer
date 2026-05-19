@@ -1,11 +1,9 @@
+import 'package:life_core/core.dart';
+
 class AppConstants {
-  static const supabaseUrl = 'https://yxemyoisejhdoqtxjzzt.supabase.co';
-
-  // TODO: hardcodeado temporalmente — revertir a --dart-define cuando funcione en Android
-  static const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4ZW15b2lzZWpoZG9xdHhqenp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDUwNDAsImV4cCI6MjA5MTAyMTA0MH0.p6gdoYWuu_SDzWgpgPeiDEtxNUYYmOnmP4Zxoe4eZ20';
-
-  // TODO: hardcodeado temporalmente — revertir a --dart-define cuando funcione en Android
-  static const n8nWebhookUrl = 'https://mi-vida-api.herramientafertom.workers.dev/agente';
+  static const supabaseUrl = CoreEnvironment.supabaseUrl;
+  static const supabaseAnonKey = CoreEnvironment.supabaseAnonKey;
+  static const n8nWebhookUrl = CoreEnvironment.n8nWebhookUrl;
 
   // Para mostrar en UI (con tilde, capitalizado)
   static const diasSemana = [

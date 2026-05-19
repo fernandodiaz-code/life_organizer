@@ -4,6 +4,10 @@ import '../core/constants.dart';
 
 class JarvisService {
   static Future<String> sendMessage(String message, String userId) async {
+    if (AppConstants.n8nWebhookUrl.isEmpty) {
+      return 'Jarvis no está configurado. Falta N8N_WEBHOOK_URL.';
+    }
+
     try {
       final response = await http
           .post(
@@ -46,7 +50,7 @@ class JarvisService {
         }
       }
       return 'Error del servidor (${response.statusCode}).';
-    } on Exception catch (e) {
+    } on Exception {
       return 'No pude conectar con Jarvis. Verifica tu webhook.';
     }
   }

@@ -4,6 +4,7 @@ import '../screens/tareas/tareas_screen.dart';
 import '../screens/horario/horario_screen.dart';
 import '../screens/proyectos/proyectos_screen.dart';
 import '../screens/jarvis/jarvis_screen.dart';
+import 'package:wetface/wetface.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -29,6 +30,7 @@ class _MainShellState extends State<MainShell> {
       HorarioScreen(key: _horarioKey),
       ProyectosScreen(key: _proyectosKey),
       const JarvisScreen(),
+      const WetFaceAlarmScreen(),
     ];
   }
 
@@ -74,6 +76,11 @@ class _MainShellState extends State<MainShell> {
             icon: Icon(Icons.smart_toy_outlined),
             selectedIcon: Icon(Icons.smart_toy),
             label: 'Jarvis',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.water_drop_outlined),
+            selectedIcon: Icon(Icons.water_drop),
+            label: 'WetFace',
           ),
         ],
       ),

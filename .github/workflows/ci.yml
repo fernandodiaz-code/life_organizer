@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  analyze-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install root dependencies
+        run: dart pub get
+
+      - name: Bootstrap workspace
+        run: dart run melos bootstrap
+
+      - name: Analyze
+        run: dart run melos exec --concurrency 1 -- "dart analyze ."
+
+      - name: Test
+        run: dart run melos exec --dir-exists=test --concurrency 1 -- "flutter test"
+
+      - name: Build Android debug
+        run: dart run melos exec --scope=life_organizer --concurrency 1 -- "flutter build apk --debug"
