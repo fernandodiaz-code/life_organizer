@@ -32,20 +32,20 @@ class TareasService {
     if (userId == null) throw StateError('Usuario no autenticado');
     final data = await _db
         .from('tareas')
-        .insert({
-          ...tarea.toInsertJson(),
-          'user_id': userId,
-        })
+        .insert({...tarea.toInsertJson(), 'user_id': userId})
         .select()
         .single();
-    return Tarea.fromJson(data as Map<String, dynamic>);
+    return Tarea.fromJson(data);
   }
 
   static Future<void> completar(String id) async {
-    await _db.from('tareas').update({
-      'estado': 'completada',
-      'completada_en': DateTime.now().toIso8601String(),
-    }).eq('id', id);
+    await _db
+        .from('tareas')
+        .update({
+          'estado': 'completada',
+          'completada_en': DateTime.now().toIso8601String(),
+        })
+        .eq('id', id);
   }
 
   static Future<void> eliminar(String id) async {

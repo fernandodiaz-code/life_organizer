@@ -19,19 +19,14 @@ class ProyectosService {
     if (userId == null) throw StateError('Usuario no autenticado');
     final data = await _db
         .from('proyectos')
-        .insert({
-          ...proyecto.toInsertJson(),
-          'user_id': userId,
-        })
+        .insert({...proyecto.toInsertJson(), 'user_id': userId})
         .select()
         .single();
-    return Proyecto.fromJson(data as Map<String, dynamic>);
+    return Proyecto.fromJson(data);
   }
 
   static Future<void> actualizarProgreso(String id, double progreso) async {
-    await _db
-        .from('proyectos')
-        .update({'progreso': progreso}).eq('id', id);
+    await _db.from('proyectos').update({'progreso': progreso}).eq('id', id);
   }
 
   static Future<void> actualizarEstado(String id, String estado) async {

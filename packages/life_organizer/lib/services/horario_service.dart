@@ -7,8 +7,13 @@ class HorarioService {
   static final _fmt = DateFormat('yyyy-MM-dd');
 
   static const _diasDb = [
-    'lunes', 'martes', 'miercoles', 'jueves',
-    'viernes', 'sabado', 'domingo',
+    'lunes',
+    'martes',
+    'miercoles',
+    'jueves',
+    'viernes',
+    'sabado',
+    'domingo',
   ];
 
   // ── Fetch ───────────────────────────────────────────────────────────────
@@ -34,7 +39,11 @@ class HorarioService {
     for (final item in items) {
       if (item.fecha != null) {
         // Evento puntual: solo mostrar si cae dentro de esta semana
-        final f = DateTime(item.fecha!.year, item.fecha!.month, item.fecha!.day);
+        final f = DateTime(
+          item.fecha!.year,
+          item.fecha!.month,
+          item.fecha!.day,
+        );
         if (!f.isBefore(lunesDeSemana) && !f.isAfter(domingo)) {
           porDia.putIfAbsent(item.dia, () => []).add(item);
         }
@@ -65,7 +74,11 @@ class HorarioService {
 
     return items.where((item) {
       if (item.fecha != null) {
-        final f = DateTime(item.fecha!.year, item.fecha!.month, item.fecha!.day);
+        final f = DateTime(
+          item.fecha!.year,
+          item.fecha!.month,
+          item.fecha!.day,
+        );
         return f == hoy;
       }
       return item.dia == diaActual;
@@ -76,7 +89,7 @@ class HorarioService {
 
   static Future<HorarioItem> crear(Map<String, dynamic> data) async {
     final res = await _db.from('horario').insert(data).select().single();
-    return HorarioItem.fromJson(res as Map<String, dynamic>);
+    return HorarioItem.fromJson(res);
   }
 
   static Future<void> actualizar(String id, Map<String, dynamic> data) async {
