@@ -9,19 +9,23 @@ class ProyectosService {
         .from('proyectos')
         .select()
         .order('fecha_inicio', ascending: false);
-    return (data as List).map((j) => Proyecto.fromJson(j)).toList();
+    return (data as List<dynamic>)
+        .map((j) => Proyecto.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<Proyecto> crear(Proyecto proyecto) async {
+    final userId = _db.auth.currentUser?.id;
+    if (userId == null) throw StateError('Usuario no autenticado');
     final data = await _db
         .from('proyectos')
         .insert({
           ...proyecto.toInsertJson(),
-          'user_id': _db.auth.currentUser!.id,
+          'user_id': userId,
         })
         .select()
         .single();
-    return Proyecto.fromJson(data);
+    return Proyecto.fromJson(data as Map<String, dynamic>);
   }
 
   static Future<void> actualizarProgreso(String id, double progreso) async {

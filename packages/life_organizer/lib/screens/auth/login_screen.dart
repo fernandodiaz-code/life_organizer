@@ -53,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showSnack(String msg, {bool success = false}) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),

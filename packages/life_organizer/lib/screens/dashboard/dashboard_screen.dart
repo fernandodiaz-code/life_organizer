@@ -23,19 +23,22 @@ class DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    load();
+    _future = _buildFuture();
   }
 
+  Future<_DashData> _buildFuture() => Future.wait([
+        HorarioService.fetchHoy(),
+        TareasService.fetchPendientes(limit: 4),
+        DeadlinesService.fetchProximos(dias: 7),
+      ]).then((results) => _DashData(
+            horario: results[0] as List<HorarioItem>,
+            tareas: results[1] as List<Tarea>,
+            deadlines: results[2] as List<DeadlineItem>,
+          ));
+
   void load() {
-    _future = Future.wait([
-      HorarioService.fetchHoy(),
-      TareasService.fetchPendientes(limit: 4),
-      DeadlinesService.fetchProximos(dias: 7),
-    ]).then((results) => _DashData(
-          horario: results[0] as List<HorarioItem>,
-          tareas: results[1] as List<Tarea>,
-          deadlines: results[2] as List<DeadlineItem>,
-        ));
+    if (!mounted) return;
+    setState(() => _future = _buildFuture());
   }
 
   String _saludo() {
@@ -71,7 +74,7 @@ class DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_outlined),
-            onPressed: () => setState(load),
+            onPressed: load,
             tooltip: 'Actualizar',
           ),
           IconButton(
@@ -97,7 +100,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                   Text('Error al cargar datos',
                       style: Theme.of(context).textTheme.bodyLarge),
                   TextButton(
-                    onPressed: () => setState(load),
+                    onPressed: load,
                     child: const Text('Reintentar'),
                   ),
                 ],
@@ -107,7 +110,7 @@ class DashboardScreenState extends State<DashboardScreen> {
 
           final data = snap.data!;
           return RefreshIndicator(
-            onRefresh: () async => setState(load),
+            onRefresh: () async => load(),
             color: AppColors.cyan,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),

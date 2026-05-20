@@ -14,11 +14,15 @@ class DeadlinesService {
         .lte('fecha', limite.toIso8601String().split('T').first)
         .neq('estado', 'completado')
         .order('fecha');
-    return (data as List).map((j) => DeadlineItem.fromJson(j)).toList();
+    return (data as List<dynamic>)
+        .map((j) => DeadlineItem.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<List<DeadlineItem>> fetchAll() async {
     final data = await _db.from('deadlines').select().order('fecha');
-    return (data as List).map((j) => DeadlineItem.fromJson(j)).toList();
+    return (data as List<dynamic>)
+        .map((j) => DeadlineItem.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 }

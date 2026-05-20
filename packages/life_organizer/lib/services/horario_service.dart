@@ -26,7 +26,9 @@ class HorarioService {
         .select()
         .order('hora_inicio', ascending: true);
 
-    final items = (data as List).map((j) => HorarioItem.fromJson(j)).toList();
+    final items = (data as List<dynamic>)
+        .map((j) => HorarioItem.fromJson(j as Map<String, dynamic>))
+        .toList();
     final Map<String, List<HorarioItem>> porDia = {};
 
     for (final item in items) {
@@ -57,7 +59,9 @@ class HorarioService {
         .select()
         .order('hora_inicio', ascending: true);
 
-    final items = (data as List).map((j) => HorarioItem.fromJson(j)).toList();
+    final items = (data as List<dynamic>)
+        .map((j) => HorarioItem.fromJson(j as Map<String, dynamic>))
+        .toList();
 
     return items.where((item) {
       if (item.fecha != null) {
@@ -72,7 +76,7 @@ class HorarioService {
 
   static Future<HorarioItem> crear(Map<String, dynamic> data) async {
     final res = await _db.from('horario').insert(data).select().single();
-    return HorarioItem.fromJson(res);
+    return HorarioItem.fromJson(res as Map<String, dynamic>);
   }
 
   static Future<void> actualizar(String id, Map<String, dynamic> data) async {

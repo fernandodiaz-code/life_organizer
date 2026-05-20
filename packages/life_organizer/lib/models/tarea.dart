@@ -53,10 +53,11 @@ class Tarea {
         materia: j['materia']?.toString(),
         prioridad: _parseInt(j['prioridad']) ?? 1,
         estado: j['estado']?.toString() ?? 'pendiente',
-        deadline:
-            j['deadline'] != null ? DateTime.parse(j['deadline'].toString()) : null,
+        deadline: j['deadline'] != null
+            ? DateTime.tryParse(j['deadline'].toString())
+            : null,
         completadaEn: j['completada_en'] != null
-            ? DateTime.parse(j['completada_en'].toString())
+            ? DateTime.tryParse(j['completada_en'].toString())
             : null,
       );
 

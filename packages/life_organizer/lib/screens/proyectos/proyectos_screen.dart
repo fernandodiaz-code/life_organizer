@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/theme.dart';
 import '../../models/proyecto.dart';
 import '../../services/proyectos_service.dart';
@@ -26,7 +27,8 @@ class ProyectosScreenState extends State<ProyectosScreen> {
     try {
       final data = await ProyectosService.fetchAll();
       if (mounted) setState(() => _proyectos = data);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error al cargar proyectos: $e');
       if (mounted) _snack('Error al cargar proyectos');
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -64,7 +66,8 @@ class ProyectosScreenState extends State<ProyectosScreen> {
       await ProyectosService.eliminar(p.id);
       setState(() => _proyectos.removeWhere((x) => x.id == p.id));
       _snack('Proyecto eliminado');
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error al eliminar proyecto: $e');
       _snack('Error al eliminar');
     }
   }
@@ -120,7 +123,8 @@ class ProyectosScreenState extends State<ProyectosScreen> {
                   await ProyectosService.actualizarProgreso(p.id, progreso);
                   await load();
                   _snack('Progreso actualizado', success: true);
-                } catch (_) {
+                } catch (e) {
+                  debugPrint('Error al actualizar progreso: $e');
                   _snack('Error al actualizar');
                 }
               },
@@ -396,11 +400,14 @@ class _AddProyectoSheetState extends State<_AddProyectoSheet> {
         Navigator.pop(context);
         widget.onCreated(creado);
       }
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error al crear proyecto: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al crear proyecto'),
+          SnackBar(
+            content: Text(e is PostgrestException
+                ? 'Supabase: ${e.message}'
+                : 'Error al crear proyecto'),
             backgroundColor: AppColors.red,
           ),
         );

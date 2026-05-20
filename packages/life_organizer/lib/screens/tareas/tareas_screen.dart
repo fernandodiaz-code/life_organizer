@@ -60,7 +60,8 @@ class TareasScreenState extends State<TareasScreen> {
         }
       });
       _snack('Tarea completada', success: true);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error al completar tarea: $e');
       _snack('Error al completar tarea');
     }
   }
@@ -88,7 +89,8 @@ class TareasScreenState extends State<TareasScreen> {
       await TareasService.eliminar(t.id);
       setState(() => _tareas.removeWhere((x) => x.id == t.id));
       _snack('Tarea eliminada');
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error al eliminar tarea: $e');
       _snack('Error al eliminar');
     }
   }

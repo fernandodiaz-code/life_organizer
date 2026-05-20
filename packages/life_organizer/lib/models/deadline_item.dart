@@ -42,7 +42,7 @@ class DeadlineItem {
         id: j['id'].toString(),
         titulo: j['titulo'] as String? ?? '',
         materia: j['materia'] as String?,
-        fecha: DateTime.parse(j['fecha'] as String),
+        fecha: DateTime.tryParse(j['fecha'] as String? ?? '') ?? DateTime.now(),
         tipo: j['tipo'] as String? ?? 'entrega',
         estado: j['estado'] as String? ?? 'pendiente',
         proyectoId: j['proyecto_id']?.toString(),

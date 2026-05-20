@@ -10,7 +10,9 @@ class TareasService {
         .select()
         .order('prioridad', ascending: false)
         .order('deadline');
-    return (data as List).map((j) => Tarea.fromJson(j)).toList();
+    return (data as List<dynamic>)
+        .map((j) => Tarea.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<List<Tarea>> fetchPendientes({int limit = 5}) async {
@@ -20,19 +22,23 @@ class TareasService {
         .neq('estado', 'completada')
         .order('prioridad', ascending: false)
         .limit(limit);
-    return (data as List).map((j) => Tarea.fromJson(j)).toList();
+    return (data as List<dynamic>)
+        .map((j) => Tarea.fromJson(j as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<Tarea> crear(Tarea tarea) async {
+    final userId = _db.auth.currentUser?.id;
+    if (userId == null) throw StateError('Usuario no autenticado');
     final data = await _db
         .from('tareas')
         .insert({
           ...tarea.toInsertJson(),
-          'user_id': _db.auth.currentUser!.id,
+          'user_id': userId,
         })
         .select()
         .single();
-    return Tarea.fromJson(data);
+    return Tarea.fromJson(data as Map<String, dynamic>);
   }
 
   static Future<void> completar(String id) async {
