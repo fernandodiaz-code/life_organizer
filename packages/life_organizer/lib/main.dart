@@ -30,10 +30,12 @@ Future<void> main() async {
   }
 
   // Barra de estado transparente
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
 
   runApp(const LifeOrganizerApp());
 }
@@ -58,14 +60,14 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (AppConstants.supabaseUrl.isEmpty ||
+        AppConstants.supabaseAnonKey.isEmpty) {
+      return const LoginScreen(authEnabled: false);
+    }
+
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
-        if (AppConstants.supabaseUrl.isEmpty ||
-            AppConstants.supabaseAnonKey.isEmpty) {
-          return const LoginScreen();
-        }
-
         // Usa la sesión actual si el stream aún no emitió
         final session = snapshot.hasData
             ? snapshot.data!.session

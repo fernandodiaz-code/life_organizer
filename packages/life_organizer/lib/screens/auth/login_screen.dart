@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/theme.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.authEnabled = true});
+
+  final bool authEnabled;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -26,6 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!widget.authEnabled) {
+      _showSnack('Configura Supabase con --dart-define para iniciar sesión.');
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       final auth = Supabase.instance.client.auth;
@@ -35,7 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passCtrl.text,
         );
         if (mounted) {
-          _showSnack('Cuenta creada. Revisa tu correo para confirmar.', success: true);
+          _showSnack(
+            'Cuenta creada. Revisa tu correo para confirmar.',
+            success: true,
+          );
         }
       } else {
         await auth.signInWithPassword(
@@ -94,9 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Life Organizer',
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          fontSize: 28,
-                          color: AppColors.textPrimary,
-                        ),
+                      fontSize: 28,
+                      color: AppColors.textPrimary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 6),
@@ -114,7 +124,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     autocorrect: false,
                     decoration: const InputDecoration(
                       labelText: 'Correo electrónico',
-                      prefixIcon: Icon(Icons.email_outlined, color: AppColors.textMuted),
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Ingresa tu correo';
@@ -130,17 +143,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: _obscure,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
-                      prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textMuted),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textMuted,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          _obscure
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
                           color: AppColors.textMuted,
                         ),
                         onPressed: () => setState(() => _obscure = !_obscure),
                       ),
                     ),
                     validator: (v) {
-                      if (v == null || v.length < 6) return 'Mínimo 6 caracteres';
+                      if (v == null || v.length < 6) {
+                        return 'Mínimo 6 caracteres';
+                      }
                       return null;
                     },
                   ),
@@ -155,7 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ? const SizedBox(
                               width: 22,
                               height: 22,
-                              child: CircularProgressIndicator(strokeWidth: 2.5),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
                             )
                           : Text(_isSignUp ? 'Crear cuenta' : 'Iniciar sesión'),
                     ),
