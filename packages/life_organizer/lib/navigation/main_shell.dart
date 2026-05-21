@@ -15,6 +15,9 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _index = 0;
+
+  // Estas keys permiten pedir a pantallas concretas que recarguen datos cuando
+  // el usuario vuelve a su pestana.
   final _dashKey = GlobalKey<DashboardScreenState>();
   final _tareasKey = GlobalKey<TareasScreenState>();
   final _horarioKey = GlobalKey<HorarioScreenState>();
@@ -24,6 +27,8 @@ class _MainShellState extends State<MainShell> {
   @override
   void initState() {
     super.initState();
+    // IndexedStack conserva vivas las pantallas aunque cambie la pestana. Eso
+    // evita perder estado local y hace la navegacion mas fluida.
     _screens = [
       DashboardScreen(key: _dashKey),
       TareasScreen(key: _tareasKey),
@@ -36,6 +41,8 @@ class _MainShellState extends State<MainShell> {
 
   void _onTabSelected(int i) {
     if (i != _index) {
+      // Al volver a pantallas de datos, pedimos refresh para mostrar cambios
+      // recientes sin reconstruir toda la app.
       if (i == 0) _dashKey.currentState?.load();
       if (i == 1) _tareasKey.currentState?.load();
       if (i == 2) _horarioKey.currentState?.load();

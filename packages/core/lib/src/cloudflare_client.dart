@@ -5,8 +5,10 @@ import 'package:http/http.dart' as http;
 import 'core_environment.dart';
 
 class CloudflareClient {
+  // Se acepta http.Client externo para poder testear el cliente sin hacer
+  // llamadas reales a internet.
   CloudflareClient({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+    : _httpClient = httpClient ?? http.Client();
 
   final http.Client _httpClient;
 
@@ -15,6 +17,8 @@ class CloudflareClient {
     Map<String, dynamic> payload, {
     Duration timeout = const Duration(seconds: 30),
   }) async {
+    // Todas las llamadas salen hacia Cloudflare, no directo a servicios con
+    // credenciales sensibles. El Worker decide que hacer con el payload.
     final response = await _httpClient
         .post(
           CoreEnvironment.cloudflareUri(path),
@@ -27,6 +31,7 @@ class CloudflareClient {
       throw CloudflareException(response.statusCode, response.body);
     }
 
+    // Algunos endpoints validos pueden responder 204 o body vacio.
     if (response.body.trim().isEmpty) {
       return const {};
     }
@@ -36,6 +41,8 @@ class CloudflareClient {
       return decoded;
     }
 
+    // Si el Worker devuelve una lista/string/numero, lo envolvemos para que el
+    // contrato del cliente siga siendo Map<String, dynamic>.
     return {'data': decoded};
   }
 }
@@ -49,4 +56,3 @@ class CloudflareException implements Exception {
   @override
   String toString() => 'CloudflareException($statusCode): $body';
 }
-

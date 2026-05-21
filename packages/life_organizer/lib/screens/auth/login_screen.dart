@@ -5,6 +5,9 @@ import '../../core/theme.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, this.authEnabled = true});
 
+  // Permite mostrar la pantalla de login aunque Supabase no este configurado.
+  // Asi la app no rompe durante desarrollo o cuando el backend real va por
+  // Cloudflare.
   final bool authEnabled;
 
   @override
@@ -27,7 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    // Primero se validan campos de UI. Si esto falla, no se toca la red.
     if (!_formKey.currentState!.validate()) return;
+
+    // Guard de arquitectura: si no hay Supabase inicializado, no podemos usar
+    // Supabase.instance. Este fue el origen del error rojo visto en Sprint 1.
     if (!widget.authEnabled) {
       _showSnack('Configura Supabase con --dart-define para iniciar sesión.');
       return;
@@ -35,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _loading = true);
     try {
+      // A partir de este punto authEnabled garantiza que Supabase fue
+      // inicializado por main.dart.
       final auth = Supabase.instance.client.auth;
       if (_isSignUp) {
         await auth.signUp(
@@ -63,6 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showSnack(String msg, {bool success = false}) {
+    // mounted evita intentar pintar mensajes cuando la pantalla ya fue
+    // desmontada por navegacion o cambios de estado async.
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

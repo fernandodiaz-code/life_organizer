@@ -2,9 +2,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/tarea.dart';
 
 class TareasService {
+  // Cliente Supabase compartido por el servicio. Si Sprint 2 migra a
+  // Cloudflare, este es uno de los puntos que habra que reemplazar.
   static final _db = Supabase.instance.client;
 
   static Future<List<Tarea>> fetchAll() async {
+    // Lee todas las tareas ordenadas para que la UI pueda listarlas sin repetir
+    // logica de ordenamiento.
     final data = await _db
         .from('tareas')
         .select()
@@ -30,6 +34,9 @@ class TareasService {
   static Future<Tarea> crear(Tarea tarea) async {
     final userId = _db.auth.currentUser?.id;
     if (userId == null) throw StateError('Usuario no autenticado');
+
+    // Se agrega user_id en el insert para que la fila quede asociada al usuario
+    // autenticado y respete las politicas RLS de Supabase.
     final data = await _db
         .from('tareas')
         .insert({...tarea.toInsertJson(), 'user_id': userId})

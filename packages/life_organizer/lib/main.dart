@@ -8,6 +8,8 @@ import 'navigation/main_shell.dart';
 import 'screens/auth/login_screen.dart';
 
 Future<void> main() async {
+  // Punto de entrada real de Flutter: antes de usar plugins o servicios
+  // nativos, hay que asegurar que el binding este inicializado.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Locale española para intl (fechas en español)
@@ -16,6 +18,9 @@ Future<void> main() async {
   if (AppConstants.supabaseUrl.isNotEmpty &&
       AppConstants.supabaseAnonKey.isNotEmpty) {
     try {
+      // Supabase solo se inicializa cuando la app recibe credenciales por
+      // --dart-define. Si se llama Supabase.instance sin esto, Flutter muestra
+      // una pantalla roja de assertion.
       await Supabase.initialize(
         url: AppConstants.supabaseUrl,
         anonKey: AppConstants.supabaseAnonKey,
@@ -45,6 +50,8 @@ class LifeOrganizerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // MaterialApp define configuracion global de UI: tema, titulo y primera
+    // pantalla. AuthGate decide despues si entra al login o a la app.
     return MaterialApp(
       title: 'Life Organizer',
       debugShowCheckedModeBanner: false,
@@ -60,6 +67,9 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // En Sprint 1 la app debe poder abrir aunque las credenciales vivan en
+    // Cloudflare y no existan localmente. Por eso no tocamos Supabase.instance
+    // hasta confirmar que esta configurado.
     if (AppConstants.supabaseUrl.isEmpty ||
         AppConstants.supabaseAnonKey.isEmpty) {
       return const LoginScreen(authEnabled: false);

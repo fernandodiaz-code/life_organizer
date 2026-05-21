@@ -11,7 +11,11 @@ class WetFaceAlarmScreen extends StatefulWidget {
 }
 
 class _WetFaceAlarmScreenState extends State<WetFaceAlarmScreen> {
+  // En Sprint 1 la validacion es mock. En Sprint 2 este servicio deberia
+  // hablar con Cloudflare/Gemini.
   final _validationService = const WetFaceValidationService();
+
+  // Alarma fija para demostrar el flujo visual sin persistencia todavia.
   final _alarms = const [
     WetFaceAlarm(id: 'morning', label: 'Despertar WetFace', hour: 7, minute: 0),
   ];
@@ -22,6 +26,9 @@ class _WetFaceAlarmScreenState extends State<WetFaceAlarmScreen> {
   Future<void> _runMockValidation() async {
     setState(() => _validating = true);
     final result = await _validationService.validateMock();
+
+    // mounted protege contra setState despues de cerrar la pantalla durante el
+    // await.
     if (!mounted) return;
     setState(() {
       _lastResult = result;
@@ -38,10 +45,7 @@ class _WetFaceAlarmScreenState extends State<WetFaceAlarmScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Alarmas',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          Text('Alarmas', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 12),
           for (final alarm in _alarms)
             Card(
@@ -80,4 +84,3 @@ class _WetFaceAlarmScreenState extends State<WetFaceAlarmScreen> {
     );
   }
 }
-

@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/horario.dart';
 
 class HorarioService {
+  // Este servicio aun usa Supabase directo. Es candidato natural para migrar a
+  // Cloudflare cuando se cierre la arquitectura de credenciales.
   static final _db = Supabase.instance.client;
   static final _fmt = DateFormat('yyyy-MM-dd');
 
@@ -36,6 +38,8 @@ class HorarioService {
         .toList();
     final Map<String, List<HorarioItem>> porDia = {};
 
+    // Un item puede ser recurrente semanal o puntual por fecha. Por eso se
+    // separan ambos casos antes de agrupar por dia.
     for (final item in items) {
       if (item.fecha != null) {
         // Evento puntual: solo mostrar si cae dentro de esta semana
